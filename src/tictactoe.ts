@@ -86,12 +86,17 @@ function initGame(): GameState {
   }
 }
 
-// function handlePlayerChange() {
-//   if (currentPlayer === 'X') {
-//     currentPlayer = 'O'
-//   } else {
-//     currentPlayer = 'X'
-//   }
-// }
+function getStatusMessage(gameState: GameState): string {
+  // Check for winner
+  if (gameState.endState === 'X') {
+    return "Player X Wins!!"
+  } else if (gameState.endState === 'O') {
+    return "O's Turn!"
+  } else if (gameState.endState === 'tie') {
+    return "It's a draw!! :|"
+  } else {
+    return `${gameState.currentPlayer}'s Turn`
+  }
+}
 
-export { initGame, makeMove }
+export { initGame, makeMove, getStatusMessage }

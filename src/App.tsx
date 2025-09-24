@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 import { Gameboard } from './components/Gameboard'
-import { type GameState, initGame, makeMove, } from './tictactoe'
+import { Status } from './components/Status'
+import { type GameState, initGame, makeMove, getStatusMessage } from './tictactoe'
 
 
 
@@ -30,7 +31,7 @@ function App() {
     <>
       <div>
         <h1>Tic Tac React</h1>
-        {/* <Status statusMessage={statusMessage} />  */}
+        <Status statusMessage={getStatusMessage(gameState)} />
         <Gameboard gameState={gameState}
           handleTileClick={handleTileClick} />
         <button id='restartBtn'
