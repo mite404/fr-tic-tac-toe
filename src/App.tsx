@@ -5,9 +5,10 @@ import { Gameboard } from './components/Gameboard'
 import { Status } from './components/Status'
 
 type CurrentPlayer = 'X' | 'O'
+
 export type GameboardProps = {
   gameState: Array<'X' | 'O' | ''>
-  handleTileClick: number
+  handleTileClick: (cellIndex: number) => void
 }
 
 const winConditions = [
