@@ -9,9 +9,9 @@ export type GameState = {
   endState?: EndState
 }
 
-let currentPlayer = 'X'
+// let currentPlayer = 'X'
 
-const initGame: Board = ['', '', '', '', '', '', '', '', '']
+const initialGameBoard: Board = ['', '', '', '', '', '', '', '', '']
 
 const winConditions = [
   [0, 1, 2],
@@ -59,9 +59,55 @@ const checkEndState = (gameState: GameState): EndState => {
 }
 
 const makeMove = (gameState: GameState, cellIndex: number) => {
-  
+  // move can't be made -- game over
+  if (gameState.endState !== undefined) {
+    return gameState
+  } 
 
+  // moves can be made -- game still going!
+  if (gameState.endState === undefined) {
+    
+    // is the chosen cell already occupied
+    if (gameState.gameBoard[cellIndex] !== '') {
+      // console.log('Cell alrady occupied! Not a valid move.')
+      return gameState
+    }
+    // cell is empty, return move
+    const updatedBoard = [...gameState.gameBoard]
+    // update board
+    updatedBoard[cellIndex] = gameState.currentPlayer
+
+    // check endState against newly updated board
+    const newGameStateObj = {
+      gameBoard: updatedBoard,
+      currentPlayer: gameState.currentPlayer,
+      endState: undefined
+    }
+    
+    const nextEndState = checkEndState(newGameStateObj)
+    // switch player
+    handlePlayerChange()
+    // return new gameState object
+    return nextEndState
+  }
   return gameState
 }
 
-export { checkEndState, winConditions, checkForWin as validateResults }
+function initGame() {
+  const initGameState = {
+    gameBoard: initialGameBoard,
+    currentPlayer: 'X',
+    endState: undefined
+  }
+  return initGameState
+}
+
+function handlePlayerChange() {
+  if (currentPlayer === 'X') {
+    currentPlayer = 'O'
+  } else {
+    currentPlayer = 'X'
+  }
+}
+
+export { initGame }
