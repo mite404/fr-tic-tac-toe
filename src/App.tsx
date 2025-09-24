@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Tile } from './components/Tile'
+import { Tile } from './components/Tile'  // <-  ???
 import './App.css'
 import { Gameboard } from './components/Gameboard'
 import { Status } from './components/Status'
+import { GameState, validateResults, checkEndState } from './tictactoe'
 
 type CurrentPlayer = 'X' | 'O'
 
@@ -11,22 +12,14 @@ export type GameboardProps = {
   handleTileClick: (cellIndex: number) => void
 }
 
-const winConditions = [
-  [0, 1, 2],
-  [0, 3, 6],
-  [0, 4, 8],
-  [1, 4, 7],
-  [2, 5, 8],
-  [2, 4, 6],
-  [3, 4, 5],
-  [6, 7, 8],
-]
+// TODO: winConditions extract tictactoe.ts
+
 
 function App() {
-  const [gameState, setGameState] = useState<GameboardProps['gameState']>(['', '', '', '', '', '', '', '', ''])
-  const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>('X')
-  const [statusMessage, setStatusMessage] = useState<string>("Player X's Turn")
-  const [gameActive, setGameActive] = useState<boolean>(true)
+  const [gameState, setGameState] = useState<GameboardProps['gameState']>()
+  // const [currentPlayer, setCurrentPlayer] = useState<CurrentPlayer>('X')
+  // const [statusMessage, setStatusMessage] = useState<string>("Player X's Turn")
+  // const [gameActive, setGameActive] = useState<boolean>(true)
 
   useEffect(() => {
     // Ignore initial empty board
@@ -58,17 +51,9 @@ function App() {
     });
   }, [gameState])
 
-  const validateResults = (board: Array<'X' | 'O' | ''>): 'X' | 'O' | null => {
-    console.log('--- Executing validateResults (New Version) ---');
-    for (const [a, b, c] of winConditions) {
-      console.log("Checking condition:", a, b, c, "Values:", board[a], board[b], board[c])
-      if (board[a] !== '' && board[a] === board[b] && board[a] === board[c]) {
-        console.log('WINNER DETECTED FOR:', a, b, c, 'Values:', JSON.stringify(board[a]), JSON.stringify(board[b]), JSON.stringify(board[c]));
-        return board[a]
-      }
-    }
-    return null
-  }
+
+  // TODO: validateResults extract into tictactoe.ts
+  
 
   const handleTileClick = (cellIndex: number) => {
     console.log('Cell clicked:', cellIndex)
@@ -98,7 +83,7 @@ function App() {
     <>
       <div>
         <h1>Tic Tac React</h1>
-        <Status statusMessage={statusMessage} />
+        <Status statusMessage={statusMessage} />  {/* getStatusMessage(gamestate) setting status message doesn't need to be part of react */}
         <Gameboard  gameState={gameState}
                     handleTileClick={handleTileClick}/>
         <button id='restartBtn' 
