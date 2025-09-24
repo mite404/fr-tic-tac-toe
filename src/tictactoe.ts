@@ -1,15 +1,11 @@
-import { Gameboard } from "./components/Gameboard"
-
-type Board = Array<'X' | 'O' | ''>
-type EndState = 'X' | 'O' | 'tie' | undefined
+export type Board = Array<'X' | 'O' | ''>
+export type EndState = 'X' | 'O' | 'tie' | undefined
 
 export type GameState = {
   gameBoard: Board
   currentPlayer: 'X' | 'O'
   endState?: EndState
 }
-
-// let currentPlayer = 'X'
 
 const initialGameBoard: Board = ['', '', '', '', '', '', '', '', '']
 
@@ -26,10 +22,10 @@ const winConditions = [
 
 const checkForWinner = (board: Board): 'X' | 'O' | null => {
   // console.log('--- Executing validateResults (New Version) ---');
-  
+
   for (const [a, b, c] of winConditions) {
     // console.log("Checking condition:", a, b, c, "Values:", board[a], board[b], board[c])
-    
+
     if (board[a] !== '' && board[a] === board[b] && board[a] === board[c]) {
       // console.log('WINNER DETECTED FOR:', a, b, c, 'Values:', JSON.stringify(board[a]), JSON.stringify(board[b]), JSON.stringify(board[c]));
       return board[a]
@@ -60,54 +56,42 @@ const checkEndState = (gameState: GameState): EndState => {
 
 const makeMove = (gameState: GameState, cellIndex: number) => {
   // move can't be made -- game over
-  if (gameState.endState !== undefined) {
+  if (gameState.endState) {
     return gameState
-  } 
+  }
+
+  // is the chosen cell already occupied
+  if (gameState.gameBoard[cellIndex] !== '') {
+    // console.log('Cell alrady occupied! Not a valid move.')
+    return gameState
+  }
+
+  const nextGameState = structuredClone(gameState)
 
   // moves can be made -- game still going!
-  if (gameState.endState === undefined) {
-    
-    // is the chosen cell already occupied
-    if (gameState.gameBoard[cellIndex] !== '') {
-      // console.log('Cell alrady occupied! Not a valid move.')
-      return gameState
-    }
-    // cell is empty, return move
-    const updatedBoard = [...gameState.gameBoard]
-    // update board
-    updatedBoard[cellIndex] = gameState.currentPlayer
+  nextGameState.gameBoard[cellIndex] = gameState.currentPlayer
+  //update the player:
+  nextGameState.currentPlayer = nextGameState.currentPlayer === 'X' ? 'O' : 'X'
+  //update the end state:
+  nextGameState.endState = checkEndState(nextGameState)
 
-    // check endState against newly updated board
-    const newGameStateObj = {
-      gameBoard: updatedBoard,
-      currentPlayer: gameState.currentPlayer,
-      endState: undefined
-    }
-    
-    const nextEndState = checkEndState(newGameStateObj)
-    // switch player
-    handlePlayerChange()
-    // return new gameState object
-    return nextEndState
-  }
-  return gameState
+  return nextGameState
 }
 
-function initGame() {
-  const initGameState = {
+function initGame(): GameState {
+  return {
     gameBoard: initialGameBoard,
     currentPlayer: 'X',
     endState: undefined
   }
-  return initGameState
 }
 
-function handlePlayerChange() {
-  if (currentPlayer === 'X') {
-    currentPlayer = 'O'
-  } else {
-    currentPlayer = 'X'
-  }
-}
+// function handlePlayerChange() {
+//   if (currentPlayer === 'X') {
+//     currentPlayer = 'O'
+//   } else {
+//     currentPlayer = 'X'
+//   }
+// }
 
-export { initGame }
+export { initGame, makeMove }
