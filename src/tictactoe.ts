@@ -21,8 +21,6 @@ const winConditions = [
 ]
 
 const checkForWinner = (board: Board): 'X' | 'O' | null => {
-  // console.log('--- Executing validateResults (New Version) ---');
-
   for (const [a, b, c] of winConditions) {
     // console.log("Checking condition:", a, b, c, "Values:", board[a], board[b], board[c])
 
@@ -57,12 +55,13 @@ const checkEndState = (gameState: GameState): EndState => {
 const makeMove = (gameState: GameState, cellIndex: number) => {
   // move can't be made -- game over
   if (gameState.endState) {
+    console.log('End State met, GAME OVER!')
     return gameState
   }
 
   // is the chosen cell already occupied
   if (gameState.gameBoard[cellIndex] !== '') {
-    // console.log('Cell alrady occupied! Not a valid move.')
+    console.log('Cell already occupied! Not a valid move.')
     return gameState
   }
 
@@ -72,8 +71,12 @@ const makeMove = (gameState: GameState, cellIndex: number) => {
   nextGameState.gameBoard[cellIndex] = gameState.currentPlayer
   //update the player:
   nextGameState.currentPlayer = nextGameState.currentPlayer === 'X' ? 'O' : 'X'
+  console.log('Updated player to:', nextGameState.currentPlayer)
+
   //update the end state:
   nextGameState.endState = checkEndState(nextGameState)
+  console.log('Checking End State...')
+  console.log('End State updated to:', nextGameState.endState)
 
   return nextGameState
 }
@@ -91,7 +94,7 @@ function getStatusMessage(gameState: GameState): string {
   if (gameState.endState === 'X') {
     return "Player X Wins!!"
   } else if (gameState.endState === 'O') {
-    return "O's Turn!"
+    return "Player O Wins!!"
   } else if (gameState.endState === 'tie') {
     return "It's a draw!! :|"
   } else {
