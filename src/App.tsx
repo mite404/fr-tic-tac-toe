@@ -8,11 +8,18 @@ function App() {
   const [gameState, setGameState] = useState<GameState | null>(null)
 
   // Fetch game state from server on component mount
+  const fetchGameState = async () => {
+    try {
+      const res = await fetch('/game')
+      const data = await res.json()
+      setGameState(data)
+    } catch (error) {
+      console.error('Failed to fetch game state:', error)
+    }
+  }
+
   useEffect(() => {
-    fetch('/game')
-      .then(res => res.json())
-      .then(data => setGameState(data))
-      .catch(err => console.error('Failed to fetch game state:', err))
+    fetchGameState()
   }, [])
 
   const handleTileClick = async (cellIndex: number) => {
@@ -28,6 +35,7 @@ function App() {
       })
 
       const newGameState = await response.json()
+
       setGameState(newGameState)
     } catch (err) {
       console.error('Failed to make move:', err)

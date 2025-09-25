@@ -34,13 +34,13 @@ function saveGame(state: GameState): void {
 
 let gameState: GameState = loadGame()
 
-// GET route
+// GET game state route
 app.get('/game', (_, res) => {
   res.json(gameState)
 })
 
 
-// POST route
+// POST a move to server
 app.post('/move', (req, res) => {
   const moveReq = req.body as MoveRequest
   gameState = makeMove(gameState, moveReq.position)
@@ -48,7 +48,7 @@ app.post('/move', (req, res) => {
   res.json(gameState)
 })
 
-// new game POST route
+// create a new game
 app.post('/new-game', (_, res) => {
   gameState = initGame()
   saveGame(gameState)
@@ -56,5 +56,5 @@ app.post('/new-game', (_, res) => {
 })
 
 ViteExpress.listen(app, PORT, () => {
-  console.log(`Server is running on ${PORT}`)
+  console.log(`Server is running on port: ${PORT}`)
 })
