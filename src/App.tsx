@@ -1,30 +1,54 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { Gameboard } from './components/Gameboard'
 import { Status } from './components/Status'
-import { type GameState, initGame, makeMove, getStatusMessage } from './tictactoe'
-
-
-
-// TODO: winConditions extract tictactoe.ts
-
+import { type GameState, getStatusMessage } from './tictactoe'
 
 function App() {
-  const [gameState, setGameState] = useState<GameState>(initGame())
+  const [gameState, setGameState] = useState<GameState | null>(null)
 
-  const handleTileClick = (cellIndex: number) => {
+  // Fetch game state from server on component mount
+  useEffect(() => {
+    fetch('/game')
+      .then(res => res.json())
+      .then(data => setGameState(data))
+      .catch(err => console.error('Failed to fetch game state:', err))
+  }, [])
+
+  const handleTileClick = async (cellIndex: number) => {
     console.log('Cell clicked:', cellIndex)
 
-    const nextGameState = makeMove(gameState, cellIndex)
-    setGameState(nextGameState)
+    try {
+      const response = await fetch('/move', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ position: cellIndex })
+      })
+
+      const newGameState = await response.json()
+      setGameState(newGameState)
+    } catch (err) {
+      console.error('Failed to make move:', err)
+    }
   }
 
-  const handleRestartClick = () => {
-    setGameState(initGame())
+  const handleRestartClick = async () => {
     console.log('Restart game clicked!')
-    // setCurrentPlayer('X')
-    // setGameActive(true)
-    // setStatusMessage("Player X's Turn!")
+
+    try {
+      const response = await fetch('/new-game', { method: 'POST' })
+      const newGameState = await response.json()
+      setGameState(newGameState)
+    } catch (err) {
+      console.error('Failed to restart game:', err)
+    }
+  }
+
+  // Show loading state while fetching initial game state
+  if (!gameState) {
+    return <div>Loading game...</div>
   }
 
   return (
