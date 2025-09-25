@@ -5,6 +5,7 @@ export type GameState = {
   gameBoard: Board
   currentPlayer: 'X' | 'O'
   endState?: EndState
+  gameId: string
 }
 
 const initialGameBoard: Board = ['', '', '', '', '', '', '', '', '']
@@ -81,11 +82,12 @@ const makeMove = (gameState: GameState, cellIndex: number) => {
   return nextGameState
 }
 
-function initGame(): GameState {
+function initGame(gameId: string): GameState {
   return {
     gameBoard: initialGameBoard,
     currentPlayer: 'X',
-    endState: undefined
+    endState: undefined,
+    gameId: gameId
   }
 }
 

@@ -4,6 +4,9 @@ import { Gameboard } from './components/Gameboard'
 import { Status } from './components/Status'
 import { type GameState, getStatusMessage } from './tictactoe'
 
+// TODO 5: create a pickGame component & createGame button
+// once a game ID is selected display the Gameboard
+
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null)
 
