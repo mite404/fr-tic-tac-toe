@@ -45,7 +45,9 @@ app.get('/games', (_, res) => {
   if (games.size === 0) {
     return res.status(200).json([])
   }
-  res.json(games)
+  const gamesArray = Array.from(games.values())
+
+  res.json(gamesArray)
 })
 
 // GET game state route
