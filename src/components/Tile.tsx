@@ -6,7 +6,7 @@ type TileProps = {
 }
 
 export function Tile(props: TileProps) {
-  const { cellIndex, currentContent, handleTileClick, isGameOver } = props
+  const { cellIndex, currentContent, handleTileClick } = props
 
   return (
     <div key={cellIndex}
