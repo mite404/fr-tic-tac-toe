@@ -13,73 +13,85 @@ const app = express()
 app.use(express.json())
 
 const savedGames = 'saved_games.json'
-const games = new Map<string, GameState>()
+const games: Map<string, GameState> = loadGames()
 
 // load game func
-function loadGame(): Map<string, GameState> {
+function loadGames(): Map<string, GameState> {
   try {
     const loadedGames = fs.readFileSync(savedGames, 'utf-8')
     const gamesObj = JSON.parse(loadedGames)
-    const loadedGamesMap = new Map(Object.entries(gamesObj))
+    const loadedGamesMap = new Map<string, GameState>(Object.entries(gamesObj))
 
     return loadedGamesMap
 
   } catch {
-    return initGame()
+    return new Map<string, GameState>()
   }
 }
 
 // save game func
 function saveAllGames(state: Map<string, GameState>): void {
   try {
-    const savedGames = fs.writeFileSync(savedGames, JSON.stringify(state))
-    const gamesObj = JSON.parse(savedGames)
-    const savedGamesMap = Object.fromEntries(gamesObj)
+    const gamesObj = Object.fromEntries(state)
+    fs.writeFileSync(savedGames, JSON.stringify(gamesObj))
 
   } catch (error) {
     console.error('Failed to save game:', error)
   }
 }
 
-let gameState: GameState = loadGame()
-
 // GET list of all games
 app.get('/games', (_, res) => {
-  res.json(gameState)
+  if (games.size === 0) {
+    return res.status(200).json([])
+  }
+  res.json(games)
 })
 
 // GET game state route
-// TODO 5: add game ID /game route
-app.get('/game/:id', (_, res) => {
-  res.json(gameState)
+app.get('/game/:id', (req, res) => {
+  const game = games.get(req.params.id)
+
+  if (!game) {
+    return res.status(404).json({ error: 'Game not found!' })
+  }
+
+  res.json(game)
 })
 
 // POST a move to server
-// TODO 3: add game ID to /move route
 app.post('/move/:id', (req, res) => {
   const gameId = req.params.id  // extract the gameId frm URL
   const currentGame = games.get(gameId)  // getting current game from Map via gameId
 
   if (!currentGame) {
-    return res.status(404).json({ Error: 'Game ID not found!' })
+    return res.status(404).json({
+      success: false,
+      error: 'Game ID not found!'
+    })
   }
 
   const moveReq = req.body as MoveRequest
-
   const updatedGameState = makeMove(currentGame, moveReq.position)
 
   games.set(gameId, updatedGameState)
   saveAllGames(games)
-  res.json(gameState)
+
+  res.status(201).json({
+    success: true,
+    game: updatedGameState
+  })
 })
 
 // create a new game
 app.post('/create', (_, res) => {
   const newGameId = uuid()
+  const newGameState = initGame(newGameId)
 
-  gameState = initGame(newGameId)
-  saveGame(gameState)
-  res.json(gameState)
+  games.set(newGameId, newGameState)
+
+  saveAllGames(games)
+  res.json(newGameState)
 })
 
 ViteExpress.listen(app, PORT, () => {
