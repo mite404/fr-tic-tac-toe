@@ -50,6 +50,30 @@ app.get('/games', (_, res) => {
   res.json(gamesArray)
 })
 
+// handle Restart Game click
+app.post('/game/:id/restart', (req, res) => {
+  // console.log('test route hit')
+  // res.json({ message: 'test works' })
+
+  console.log('Restart rout hit! ID:', req.params.id)
+  const gameId = req.params.id
+  const foundGame = games.get(gameId)
+
+  if (!foundGame) {
+    return res.status(404).json({
+      success: false,
+      error: 'Game ID not found!'
+    })
+  }
+
+  if (foundGame) {
+    const newGameState = initGame(gameId)
+    games.set(gameId, newGameState)
+    saveAllGames(games)
+    return res.json(newGameState)
+  }
+})
+
 // GET game state route
 app.get('/game/:id', (req, res) => {
   const game = games.get(req.params.id)
@@ -59,6 +83,16 @@ app.get('/game/:id', (req, res) => {
   }
 
   res.json(game)
+})
+
+// create a new game
+app.post('/create', (_, res) => {
+  const newGameId = uuid()
+  const newGameState = initGame(newGameId)
+
+  games.set(newGameId, newGameState)
+  saveAllGames(games)
+  res.json(newGameState)
 })
 
 // POST a move to server
@@ -83,17 +117,6 @@ app.post('/move/:id', (req, res) => {
     success: true,
     game: updatedGameState
   })
-})
-
-// create a new game
-app.post('/create', (_, res) => {
-  const newGameId = uuid()
-  const newGameState = initGame(newGameId)
-
-  games.set(newGameId, newGameState)
-
-  saveAllGames(games)
-  res.json(newGameState)
 })
 
 ViteExpress.listen(app, PORT, () => {

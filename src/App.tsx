@@ -58,14 +58,24 @@ function App() {
 
   const handleRestartClick = async () => {
     console.log('Restart game clicked!')
+    if (!selectedGameId) return
 
     try {
-      const response = await fetch('/create', { method: 'POST' })
-      const newGameState = await response.json()
-      setGameState(newGameState)
+      const response = await fetch(`/game/${selectedGameId}/restart`, { method: 'POST' })
+      // refetch updated game state from server
+      await fetchGameState(selectedGameId)
+
+      const freshGameState = await response.json()
+      setGameState(freshGameState)
+
     } catch (err) {
       console.error('Failed to restart game:', err)
     }
+  }
+
+  const handleBackToPickGame = () => {
+    setSelectedGameId(null)
+    setGameState(null)
   }
 
   return (
@@ -78,10 +88,17 @@ function App() {
               <Status statusMessage={getStatusMessage(gameState)} />
               <Gameboard gameState={gameState}
                 handleTileClick={handleTileClick} />
-              <button id='restartBtn'
-                onClick={handleRestartClick}>
-                Restart Game
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button id='restartBtn'
+                  onClick={handleRestartClick}>
+                  Restart Game
+                </button>
+                <button id='backToPickGameBtn'
+                  onClick={handleBackToPickGame}
+                >
+                  Back to Games List
+                </button>
+              </div>
             </>
           ) : (
             <div>Loading game...</div>
@@ -89,7 +106,7 @@ function App() {
         ) : (
           <PickGame onGameSelected={setSelectedGameId} />
         )}
-      </div>
+      </div >
     </>
   )
 }
