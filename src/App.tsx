@@ -60,7 +60,7 @@ function App() {
     console.log('Restart game clicked!')
 
     try {
-      const response = await fetch('/new-game', { method: 'POST' })
+      const response = await fetch('/create', { method: 'POST' })
       const newGameState = await response.json()
       setGameState(newGameState)
     } catch (err) {
