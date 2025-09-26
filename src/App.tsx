@@ -43,9 +43,14 @@ function App() {
         body: JSON.stringify({ position: cellIndex })
       })
 
-      const newGameState = await response.json()
+      const result = await response.json()
+      console.log('Response from /move:', result)
 
-      setGameState(newGameState)
+      if (result.success) {
+        setGameState(result.game)
+      } else {
+        console.error('Move failed:', result.error)
+      }
     } catch (err) {
       console.error('Failed to make move:', err)
     }
@@ -61,11 +66,6 @@ function App() {
     } catch (err) {
       console.error('Failed to restart game:', err)
     }
-  }
-
-  // Show loading state while fetching initial game state
-  if (!gameState) {
-    return <div>Loading game...</div>
   }
 
   return (
