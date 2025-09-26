@@ -10,10 +10,12 @@ import { type GameState, getStatusMessage } from './tictactoe'
 function App() {
   const [gameState, setGameState] = useState<GameState | null>(null)
 
+  const gameId = '74ea2545-e44e-47ee-940e-50ae91fcc561'
+
   // Fetch game state from server on component mount
   const fetchGameState = async () => {
     try {
-      const res = await fetch('/game')
+      const res = await fetch(`/game/${gameId}`)
       const data = await res.json()
       setGameState(data)
     } catch (error) {
@@ -29,7 +31,7 @@ function App() {
     console.log('Cell clicked:', cellIndex)
 
     try {
-      const response = await fetch('/move', {
+      const response = await fetch(`/move/${gameId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
