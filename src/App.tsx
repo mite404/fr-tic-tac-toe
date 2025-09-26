@@ -12,8 +12,6 @@ function App() {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null)
 
-  // const gameId = '74ea2545-e44e-47ee-940e-50ae91fcc561'
-
   useEffect(() => {
     if (selectedGameId) {
       fetchGameState(selectedGameId)
